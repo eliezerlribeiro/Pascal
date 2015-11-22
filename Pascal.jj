@@ -135,24 +135,28 @@ String Tipo_padrao():
 String Declaracoes_de_subprogramas():
 {String retorno1,retorno2,saida="";}
 {
-  (retorno1=Declaracoes_de_subprograma() retorno2=Declaracoes_de_subprogramas() {saida=retorno1 + retorno1; return saida;}  )?
+  retorno1=Declaracoes_de_subprograma() {saida=retorno1; return saida;}  
   {return saida;} 
 }
 
 String Declaracoes_de_subprograma():
-{String retorno1,retorno2,retorno3,saida="";}
+{Token t1;String retorno1,retorno2,retorno3,saida="";}
 {
-  retorno1=Cabecalho_de_subprograma() retorno2=Declaracoes() retorno3=Enunciado_composto() {saida=retorno1+retorno2+retorno3; return saida;}
+  (retorno1=Cabecalho_de_subprograma() retorno2=Declaracoes() retorno3=Enunciado_composto() t1=<SEMI> 
+  {saida=retorno1+retorno2+retorno3+t1.image+"\n"; return saida;}
+  )*
+  {return saida;}
+	
 }
 
 String Cabecalho_de_subprograma():
 {Token t1,t2,t3,t4;String saida,retorno1,retorno2;}
 {
  t1=<FUNCTION> t2=<ID> retorno1=Argumentos() t3=<DOISPONTOS> retorno2=Tipo_padrao() t4=<SEMI> 
- {saida=t1.image+t2.image+retorno1+t3.image+retorno2+t4.image;return saida;}
+ {saida=t1.image+" "+t2.image+retorno1+t3.image+retorno2+t4.image+"\n";return saida;}
  | 
  t1=<PROCEDURE> t2=<ID> retorno1=Argumentos() t3=<SEMI>
- {saida=t1.image+t2.image+retorno1+t3.image;return saida;}
+ {saida=t1.image+" "+t2.image+retorno1+t3.image+"\n";return saida;}
 
 }
 
@@ -198,36 +202,36 @@ String Enunciados_opcionais(String entrada):
 String Lista_de_enunciados(String entrada):
 {String retorno1,retorno2,saida="";}
 {
- retorno1=Enunciado() retorno2=Lista_de_enunciados2(entrada)
+ retorno1=Enunciado(entrada) retorno2=Lista_de_enunciados2(entrada)
  {saida=retorno1+retorno2;return saida;}
 }
 
 String Lista_de_enunciados2(String entrada):
 {Token t1;String retorno1,retorno2,saida="";}
 {
-  (t1=<SEMI> retorno1=Enunciado() retorno2=Lista_de_enunciados2(entrada)
+  (t1=<SEMI> retorno1=Enunciado(entrada) retorno2=Lista_de_enunciados2(entrada)
   {saida=t1.image+"\n"+entrada+retorno1+retorno2;return saida;}
   )?
   {return saida;}
 }
 
-String Enunciado():
+String Enunciado(String entrada):
 {Token t1,t2,t3;String retorno1,retorno2,retorno3,saida;}
 {
   t1=<ID> retorno1=Enunciado2()
-      {saida=t1.image+retorno1;return saida;}
+      {saida=t1.image+" "+retorno1;return saida;}
   | retorno1=Enunciado_composto()
       {saida=retorno1;return saida;}
-  | t1=<IF> retorno1=Expressao() t2=<THEN> retorno2=Enunciado() t3=<ELSE> retorno3=Enunciado()
-      {saida=t1.image+retorno1+t2.image+retorno2+t3.image+retorno3;return saida;}
-  | t1=<WHILE> retorno1=Expressao() t2=<DO> retorno2=Enunciado()
-      {saida=t1.image+retorno1+t2.image+retorno2;return saida;}
+  | t1=<IF> retorno1=Expressao() t2=<THEN> retorno2=Enunciado(entrada+"\t") t3=<ELSE> retorno3=Enunciado(entrada+"\t")
+      {saida=t1.image+" "+retorno1+" "+t2.image+"\n"+entrada+"\t"+retorno2+"\n"+entrada+t3.image+"\n"+entrada+"\t"+retorno3;return saida;}
+  | t1=<WHILE> retorno1=Expressao() t2=<DO> retorno2=Enunciado(entrada)
+      {saida=t1.image+" "+retorno1+t2.image+retorno2;return saida;}
 }
 String Enunciado2():
 {Token t1;String retorno1,retorno2,saida;}
 {
-  retorno1=Variavel() t1=<ATRIB> retorno2=Expressao(){saida=retorno1+t1.image+retorno2;return saida;}
-  | retorno1=Chamada_de_procedimento() {saida=retorno1;return saida;}
+  retorno1=Variavel() t1=<ATRIB> retorno2=Expressao(){saida=retorno1+t1.image+" "+retorno2;return saida;}
+  | retorno1=Chamada_de_procedimento() {saida="\b"+retorno1;return saida;}
 }
 
 String Variavel():
