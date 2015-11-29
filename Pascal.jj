@@ -225,7 +225,7 @@ String Enunciado(String entrada):
   | t1=<IF> retorno1=Expressao() t2=<THEN> retorno2=Enunciado(entrada+"  ") t3=<ELSE> retorno3=Enunciado(entrada+"  ")
       {saida=entrada+t1.image+" "+retorno1+" "+t2.image+"\n"+retorno2+"\n"+entrada+t3.image+"\n"+retorno3;return saida;}
   | t1=<WHILE> retorno1=Expressao() t2=<DO> retorno2=Enunciado(entrada+"  ")
-      {saida=t1.image+" "+retorno1+t2.image+retorno2;return saida;}
+      {saida=entrada+ t1.image+" "+retorno1+" "+t2.image+"\n"+retorno2;return saida;}
 }
 String Enunciado2():
 {Token t1;String retorno1,retorno2,saida;}
